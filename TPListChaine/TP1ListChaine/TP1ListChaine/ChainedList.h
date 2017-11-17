@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "ChainedListEntry.h"
 #include "stdafx.h"
 
 using namespace std;
@@ -10,27 +11,13 @@ using namespace std;
 
 class ChainedList
 {
-	typedef struct ChainedListEntry {
-		ChainedListEntry * previous;
-		int value;
-		ChainedListEntry * next;
-	} ChainedListEntry;
-
-	ChainedListEntry * initListEntry(ChainedListEntry * previous, ChainedListEntry * next, int value) {
-		ChainedListEntry * entry = new ChainedListEntry;
-		entry->previous = previous;
-		entry->next = next;
-		entry->value = value;
-
-		return entry;
-	}
 
 private:
 	ChainedListEntry * cursor;
 
 public:
 	ChainedList(int value) {
-		this->cursor = initListEntry(NULL, NULL, value);
+		this->cursor = new ChainedListEntry(NULL, NULL, value);
 	};
 
 	bool isAtBegining() {
@@ -50,8 +37,20 @@ public:
 	void setAtBegining();
 	void setAtEnd();
 
+	void appendAt(int pos, ChainedListEntry * entry);
+	void appendAtCurrentPos(ChainedListEntry * entry);
+	void appendAtBegining(ChainedListEntry * entry);
+	void appendAtEnd(ChainedListEntry * entry);
+
+	void removeEntryMatching(int value);
+	void remove(int pos);
+	void removeCurrent();
+	void removeLast();
+	void removeFirst();
+
 	void goToNextEntry();
 	void goToPreviousEntry();
+	void goTo(int pos);
 
 	friend ostream & operator<<(ostream & stream, ChainedList chainedList);
 };
