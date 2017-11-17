@@ -3,6 +3,48 @@
 #include "ChainedList.h"
 
 
+ChainedList ChainedList::duplicate() {
+	setAtBegining();
+	ChainedList duplicatedList(cursor->value);
+	
+	while (!isAtEnd()) {
+		goToNextEntry();
+		duplicatedList.appendAtEnd(new ChainedListEntry(duplicatedList.cursor, NULL, cursor->value));
+		duplicatedList.goToNextEntry();
+	}
+
+	return duplicatedList;
+}
+
+void ChainedList::concat(ChainedList * list) {
+	setAtEnd();
+	list->setAtBegining();
+
+	cursor->next = list->cursor;
+	list->cursor->previous = cursor;
+}
+
+void ChainedList::sort() {
+	int size = this->size();
+	if (size <= 1) {
+		return;
+	}
+	bool flag = true;
+	
+	while (flag) {
+		flag = false;
+		goTo(2);
+		int a = 0;
+		while (!isAtEnd()) {
+			if (cursor->previous->value > cursor->value) {
+				swapWithPrecedent();
+				flag = true;
+			}
+			goToNextEntry();
+		}
+	}
+}
+ 
 int ChainedList::size() {
 	int size = 0;
 	ChainedListEntry * saveCursor = this->cursor;
@@ -40,6 +82,26 @@ int ChainedList::sizeToBegining() {
 
 	this->cursor = saveCursor;
 	return size;
+}
+
+void ChainedList::swapWithPrecedent() {
+	if (sizeToBegining() < 2) {
+		return;
+	}
+
+	ChainedListEntry * temp = cursor->previous;
+
+	// Handler Outside Values;
+	if (temp->previous != NULL)
+		temp->previous->next = cursor;
+	if (cursor->next != NULL)
+		cursor->next->previous = temp;
+
+
+	temp->next = cursor->next;
+	cursor->next = temp;
+	cursor->previous = temp->previous;
+	temp->previous = cursor;
 }
 
 void ChainedList::goToNextEntry() {
@@ -176,6 +238,27 @@ void ChainedList::setAtEnd() {
 	while (!isAtEnd()) {
 		goToNextEntry();
 	}
+}
+
+bool ChainedList::operator==(ChainedList chainedList) {
+	if (this->size() != chainedList.size())
+		return false;
+
+	this->setAtBegining();
+	chainedList.setAtBegining();
+	
+	if (this->cursor->value != chainedList.cursor->value)
+		return false;
+
+	while (this->isAtEnd()) {
+		this->goToNextEntry();
+		chainedList.goToNextEntry();
+
+		if (this->cursor->value != chainedList.cursor->value)
+			return false;
+	}w
+
+	return true;
 }
 
 ostream & operator<<(ostream & stream, ChainedList chainedList) {
