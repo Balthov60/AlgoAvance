@@ -9,7 +9,7 @@ ChainedList ChainedList::duplicate() {
 	
 	while (!isAtEnd()) {
 		goToNextEntry();
-		duplicatedList.appendAtEnd(new ChainedListEntry(duplicatedList.cursor, NULL, cursor->value));
+		duplicatedList.appendAtEnd(new Node(duplicatedList.cursor, NULL, cursor->value));
 		duplicatedList.goToNextEntry();
 	}
 
@@ -23,18 +23,16 @@ void ChainedList::concat(ChainedList * list) {
 	cursor->next = list->cursor;
 	list->cursor->previous = cursor;
 }
-
 void ChainedList::sort() {
 	int size = this->size();
-	if (size <= 1) {
+	if (size <= 1)
 		return;
-	}
+
 	bool flag = true;
-	
 	while (flag) {
 		flag = false;
 		goTo(2);
-		int a = 0;
+
 		while (!isAtEnd()) {
 			if (cursor->previous->value > cursor->value) {
 				swapWithPrecedent();
@@ -46,22 +44,12 @@ void ChainedList::sort() {
 }
  
 int ChainedList::size() {
-	int size = 0;
-	ChainedListEntry * saveCursor = this->cursor;
 	setAtBegining();
-
-	while (!isAtEnd()) {
-		size++;
-		goToNextEntry();
-	}
-	size++;
-
-	this->cursor = saveCursor;
-	return size;
+	return sizeToEnd();
 }
 int ChainedList::sizeToEnd() {
 	int size = 1;
-	ChainedListEntry * saveCursor = this->cursor;
+	Node * saveCursor = this->cursor;
 
 	while (!isAtEnd()) {
 		size++;
@@ -73,7 +61,7 @@ int ChainedList::sizeToEnd() {
 }
 int ChainedList::sizeToBegining() {
 	int size = 1;
-	ChainedListEntry * saveCursor = this->cursor;
+	Node * saveCursor = this->cursor;
 
 	while (!isAtBegining()) {
 		size++;
@@ -89,14 +77,13 @@ void ChainedList::swapWithPrecedent() {
 		return;
 	}
 
-	ChainedListEntry * temp = cursor->previous;
+	Node * temp = cursor->previous;
 
-	// Handler Outside Values;
+	// Handling Outside Values;
 	if (temp->previous != NULL)
 		temp->previous->next = cursor;
 	if (cursor->next != NULL)
 		cursor->next->previous = temp;
-
 
 	temp->next = cursor->next;
 	cursor->next = temp;
@@ -113,13 +100,13 @@ void ChainedList::goToPreviousEntry() {
 void ChainedList::goTo(int pos) {
 	int sizeToBegining = this->sizeToBegining();
 
-	if (pos < sizeToBegining) {
+	if (pos == sizeToBegining) {
+		return;
+	}
+	else if (pos < sizeToBegining) {
 		for (int i = 0; i < sizeToBegining - pos; i++) {
 			goToPreviousEntry();
 		}
-	}
-	else if (pos == sizeToBegining) {
-		return;
 	}
 	else {
 		int current = sizeToBegining;
@@ -130,38 +117,34 @@ void ChainedList::goTo(int pos) {
 	}
 }
 
-void ChainedList::appendAt(int pos, ChainedListEntry * entry) {
+void ChainedList::appendAt(int pos, Node * entry) {
 	if (pos <= 1) {
 		appendAtBegining(entry);
-		return;
 	}
 	else if (pos >= size()) {
 		appendAtEnd(entry);
-		return;
 	}
-
-	goTo(pos);
-	appendAtCurrentPos(entry);
+	else {
+		goTo(pos);
+		appendAtCurrentPos(entry);
+	}
 }
-void ChainedList::appendAtCurrentPos(ChainedListEntry * entry) {
-	ChainedListEntry * next = cursor;
-	goToPreviousEntry();
-	ChainedListEntry * previous = cursor;
+void ChainedList::appendAtCurrentPos(Node * entry) {
+	Node * next = cursor;
+	Node * previous = cursor->previous;
 
 	next->previous = entry;
 	entry->next = next;
 	entry->previous = previous;
 	previous->next = entry;
-
-	goToNextEntry();
 }
-void ChainedList::appendAtBegining(ChainedListEntry * entry) {
+void ChainedList::appendAtBegining(Node * entry) {
 	setAtBegining();
 	entry->previous = NULL;
 	entry->next = cursor;
 	cursor->previous = entry;
 }
-void ChainedList::appendAtEnd(ChainedListEntry * entry) {
+void ChainedList::appendAtEnd(Node * entry) {
 	setAtEnd();
 	entry->next = NULL;
 	entry->previous = cursor;
@@ -185,33 +168,31 @@ void ChainedList::removeEntryMatching(int value)
 void ChainedList::remove(int pos) {
 	if (pos <= 1) {
 		removeFirst();
-		return;
 	}
 	else if (pos >= size()) {
 		removeLast();
-		return;
 	}
-
-	goTo(pos);
-	removeCurrent();
+	else {
+		goTo(pos);
+		removeCurrent();
+	}
 }
 void ChainedList::removeCurrent() {
 	if (sizeToBegining() <= 1) {
 		removeFirst();
-		return;
 	}
 	else if (sizeToEnd() <= 1) {
 		removeLast();
-		return;
 	}
-	goToNextEntry();
-	ChainedListEntry * next = cursor;
-	goToPreviousEntry();
-	goToPreviousEntry();
+	else {
+		Node * next = cursor->next;
 
-	delete cursor->next;
-	cursor->next = next;
-	next->previous = cursor;
+		goToPreviousEntry();
+		delete cursor->next;
+
+		cursor->next = next;
+		next->previous = cursor;
+	}
 }
 void ChainedList::removeFirst() {
 	setAtBegining();
@@ -256,7 +237,7 @@ bool ChainedList::operator==(ChainedList chainedList) {
 
 		if (this->cursor->value != chainedList.cursor->value)
 			return false;
-	}w
+	}
 
 	return true;
 }

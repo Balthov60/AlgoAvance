@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 
-#include "ChainedListEntry.h"
+#include "Node.h"
 #include "stdafx.h"
 
 using namespace std;
@@ -13,18 +13,18 @@ class ChainedList
 {
 
 private:
-	ChainedListEntry * cursor;
+	Node * cursor;
 
 public:
 	ChainedList(int value) {
-		this->cursor = new ChainedListEntry(NULL, NULL, value);
+		this->cursor = new Node(NULL, NULL, value);
 	};
-	ChainedList(ChainedListEntry * entry) {
+	ChainedList(Node * entry) {
 		cursor = entry;
 	};
 	ChainedList(int tab[], int size) {
 		for (int i = 0; i < size; i++)
-			appendAtEnd(new ChainedListEntry(tab[i]));
+			appendAtBegining(new Node(tab[i]));
 	};
 
 	ChainedList duplicate();
@@ -48,10 +48,10 @@ public:
 	void setAtBegining();
 	void setAtEnd();
 
-	void appendAt(int pos, ChainedListEntry * entry);
-	void appendAtCurrentPos(ChainedListEntry * entry);
-	void appendAtBegining(ChainedListEntry * entry);
-	void appendAtEnd(ChainedListEntry * entry);
+	void appendAt(int pos, Node * entry);
+	void appendAtCurrentPos(Node * entry);
+	void appendAtBegining(Node * entry);
+	void appendAtEnd(Node * entry);
 
 	void removeEntryMatching(int value);
 	void remove(int pos);
